@@ -117,7 +117,7 @@ class Notifier():
         # print(new_analysis)
         # print("*********** End ************")
         # print()
-        self.notify_stdout(new_analysis)
+        ##self.notify_stdout(new_analysis)
 
 
     def notify_discord(self, new_analysis):
@@ -278,6 +278,7 @@ class Notifier():
                     for indicator in new_analysis[exchange][market][indicator_type]:
 
                         sendNotification = False
+                        allIndicatorData = {}
 
                         for index, analysis in enumerate(new_analysis[exchange][market][indicator_type][indicator]):
                             if analysis['result'].shape[0] == 0:
@@ -336,9 +337,25 @@ class Notifier():
                                 if not analysis['config']['alert_enabled']:
                                     should_alert = False
 
+                                base_currency, quote_currency = market.split('/')
+
+                                jsonIndicator = {}
+                                jsonIndicator["values"] = values
+                                jsonIndicator["exchange"] = exchange
+                                jsonIndicator["market"] = market
+                                jsonIndicator["base_currency"] = base_currency
+                                jsonIndicator["quote_currency"] = quote_currency
+                                jsonIndicator["indicator"] = indicator
+                                jsonIndicator["indicator_number"] = indicator_number
+                                jsonIndicator["analysis"] = analysis
+                                jsonIndicator["status"] = status
+                                jsonIndicator["last_status"] = last_status
+
+                                allIndicatorData[base_currency + quote_currency] = jsonIndicator
+
                                 if should_alert:
                                     sendNotification = True
-                                    base_currency, quote_currency = market.split('/')
+                                    
                                     new_message += message_template.render(
                                         values=values,
                                         exchange=exchange,
@@ -351,9 +368,12 @@ class Notifier():
                                         status=status,
                                         last_status=last_status
                                     )
-                    if sendNotification==True:
-                        self.notify_stdout(new_message)
-                        new_message = str()
+                    self.stdout_client.notify(json.dumps(allIndicatorData))
+                    new_message = str()
+                    allIndicatorData = {}
+                    #if sendNotification==True:
+                    #    self.notify_stdout(new_message)
+                    #    new_message = str()
         # Merge changes from new analysis into last analysis
         self.last_analysis = {**self.last_analysis, **new_analysis}
         return str()
