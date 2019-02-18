@@ -112,12 +112,11 @@ class Notifier():
         Args:
             new_analysis (dict): The new_analysis to send.
         """
-        # print("********** Start *************")
-        # print("Notifier Test : all data : ")
-        # print(new_analysis)
-        # print("*********** End ************")
-        # print()
-        ##self.notify_stdout(new_analysis)
+        print("********** Start *************")
+        print("Notifier Test : all data : ")
+        print(new_analysis)
+        print("*********** End ************")
+        print()
 
 
     def notify_discord(self, new_analysis):
@@ -368,12 +367,13 @@ class Notifier():
                                         status=status,
                                         last_status=last_status
                                     )
-                    self.stdout_client.notify(json.dumps(allIndicatorData))
-                    new_message = str()
+                    
+                    
+                    self.notify_all_new(json.dumps(allIndicatorData))
                     allIndicatorData = {}
                     #if sendNotification==True:
                     #    self.notify_stdout(new_message)
                     #    new_message = str()
         # Merge changes from new analysis into last analysis
         self.last_analysis = {**self.last_analysis, **new_analysis}
-        return str()
+        return new_message

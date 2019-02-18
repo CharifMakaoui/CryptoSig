@@ -104,7 +104,6 @@ class Behaviour():
                         self.output[output_mode](output_data, market_pair),
                         end=''
                     )
-                    self.notifier.notify_all_new(new_result)
                 else:
                     self.logger.warn()
 
