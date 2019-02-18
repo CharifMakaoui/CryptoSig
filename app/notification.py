@@ -106,6 +106,18 @@ class Notifier():
         self.notify_webhook(new_analysis)
         self.notify_stdout(new_analysis)
 
+    def notify_all_new(self, new_analysis):
+        """Trigger a notification for all notification options.
+
+        Args:
+            new_analysis (dict): The new_analysis to send.
+        """
+        print("********** Start *************")
+        print("Notifier Test : all data : ")
+        print(new_analysis)
+        print("*********** End ************")
+        print()
+
     def notify_discord(self, new_analysis):
         """Send a notification via the discord notifier
 
@@ -261,8 +273,6 @@ class Notifier():
                 for indicator_type in new_analysis[exchange][market]:
                     if indicator_type == 'informants':
                         continue
-
-                    print(new_analysis)
                     for indicator in new_analysis[exchange][market][indicator_type]:
                         for index, analysis in enumerate(new_analysis[exchange][market][indicator_type][indicator]):
                             if analysis['result'].shape[0] == 0:
@@ -323,7 +333,6 @@ class Notifier():
 
                                 if should_alert:
                                     base_currency, quote_currency = market.split('/')
-                                
                                     new_message += message_template.render(
                                         values=values,
                                         exchange=exchange,
