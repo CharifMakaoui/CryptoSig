@@ -1,9 +1,5 @@
 # Crypto Signals
 
-### Development state: Beta (Code is stable, documentation is often lagging)
-
-### Join our community [Discord](https://discord.gg/MWTJVFf) channel!
-
 Crypto Signals is a command line tool that automates your crypto currency Technical Analysis (TA).
 
 Track over 500 coins across Bittrex, Bitfinex, GDAX, Gemini and more!
@@ -39,9 +35,9 @@ The commands listed below are intended to be run in a terminal.
 
 1. Create a config.yml file in your current directory. See the Configuring config.yml section below for customizing settings.
 
-1. In a terminal run the application. `docker run --rm -v $PWD/config.yml:/app/config.yml shadowreaver/crypto-signal:master`.
+1. In a terminal run the application. `docker run --rm -v $PWD/config.yml:/app/config.yml mrcharif/aquacrypto:latest`.
 
-1. When you want to update the application run `docker pull shadowreaver/crypto-signal:master`
+1. When you want to update the application run `docker pull mrcharif/aquacrypto:latest`
 
 ### Configuring config.yml
 

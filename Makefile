@@ -1,5 +1,5 @@
-DOCKER_REPO_NAME ?= shadowreaver/
-DOCKER_CONTAINER_NAME ?= crypto-signal
+DOCKER_REPO_NAME ?= mrcharif/
+DOCKER_CONTAINER_NAME ?= aquacrypto
 DOCKER_IMAGE_NAME ?= ${DOCKER_REPO_NAME}${DOCKER_CONTAINER_NAME}
 GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 
