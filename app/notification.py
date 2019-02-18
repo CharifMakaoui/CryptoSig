@@ -112,11 +112,13 @@ class Notifier():
         Args:
             new_analysis (dict): The new_analysis to send.
         """
-        print("********** Start *************")
-        print("Notifier Test : all data : ")
-        print(new_analysis)
-        print("*********** End ************")
-        print()
+        # print("********** Start *************")
+        # print("Notifier Test : all data : ")
+        # print(new_analysis)
+        # print("*********** End ************")
+        # print()
+        self.notify_stdout(new_analysis)
+
 
     def notify_discord(self, new_analysis):
         """Send a notification via the discord notifier
