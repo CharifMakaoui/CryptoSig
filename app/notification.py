@@ -276,6 +276,9 @@ class Notifier():
                     if indicator_type == 'informants':
                         continue
                     for indicator in new_analysis[exchange][market][indicator_type]:
+
+                        sendNotification = False
+
                         for index, analysis in enumerate(new_analysis[exchange][market][indicator_type][indicator]):
                             if analysis['result'].shape[0] == 0:
                                 continue
@@ -334,6 +337,7 @@ class Notifier():
                                     should_alert = False
 
                                 if should_alert:
+                                    sendNotification = True
                                     base_currency, quote_currency = market.split('/')
                                     new_message += message_template.render(
                                         values=values,
@@ -347,7 +351,9 @@ class Notifier():
                                         status=status,
                                         last_status=last_status
                                     )
-
+                    if sendNotification==True:
+                        self.notify_stdout(new_message)
+                        new_message = str()
         # Merge changes from new analysis into last analysis
         self.last_analysis = {**self.last_analysis, **new_analysis}
-        return new_message
+        return str()
