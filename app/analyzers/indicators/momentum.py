@@ -36,6 +36,6 @@ class Momentum(IndicatorUtils):
 
         if mom_values[signal[0]].shape[0]:
             mom_values['is_hot'] = mom_values[signal[0]] > hot_thresh
-            mom_values['is_cold'] = mom_values[signal[0]] < cold_thresh
+            mom_values['is_cold'] = mom_values[signal[0]] < cold_thresh  
 
         return mom_values

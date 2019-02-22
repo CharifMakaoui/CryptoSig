@@ -6,6 +6,7 @@ from twilio.rest import Client
 
 from notifiers.utils import NotifierUtils
 
+
 class TwilioNotifier(NotifierUtils):
     """Class for handling twilio notifications
     """
@@ -24,7 +25,6 @@ class TwilioNotifier(NotifierUtils):
         self.twilio_sender_number = twilio_sender_number
         self.twilio_receiver_number = twilio_receiver_number
         self.twilio_client = Client(twilio_key, twilio_secret)
-
 
     def notify(self, message):
         """Sends the message.

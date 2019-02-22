@@ -62,7 +62,7 @@ class Behaviour():
 
         new_result = self._test_strategies(market_data, output_mode)
 
-        self.notifier.notify_all(new_result)
+        #self.notifier.notify_all(new_result)
 
 
     def _test_strategies(self, market_data, output_mode):
@@ -74,15 +74,21 @@ class Behaviour():
         """
 
         new_result = dict()
+        
         for exchange in market_data:
+
             self.logger.info("Beginning analysis of %s", exchange)
             if exchange not in new_result:
                 new_result[exchange] = dict()
 
             for market_pair in market_data[exchange]:
+                My_new_result = dict()
+                My_new_result[exchange] = dict()
+
                 self.logger.info("Beginning analysis of %s", market_pair)
                 if market_pair not in new_result[exchange]:
                     new_result[exchange][market_pair] = dict()
+                    My_new_result[exchange][market_pair] = dict()
 
                 new_result[exchange][market_pair]['indicators'] = self._get_indicator_results(
                     exchange,
@@ -100,13 +106,16 @@ class Behaviour():
 
                 if output_mode in self.output:
                     output_data = deepcopy(new_result[exchange][market_pair])
-                    print(
-                        self.output[output_mode](output_data, market_pair),
-                        end=''
-                    )
+                    #print(
+                    #    self.output[output_mode](output_data, market_pair),
+                    #    end=''
+                    #)
                 else:
                     self.logger.warn()
 
+                My_new_result[exchange][market_pair] = new_result[exchange][market_pair]
+
+                self.notifier.notify_all_new(My_new_result)
         # Print an empty line when complete
         print()
         return new_result
