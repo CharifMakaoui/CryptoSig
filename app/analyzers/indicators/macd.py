@@ -27,7 +27,7 @@ class MACD(IndicatorUtils):
         """
 
         dataframe = self.convert_to_dataframe(historical_data)
-        macd_values = abstract.MACD(dataframe).iloc[:]
+        macd_values = abstract.MACD(dataframe, fastperiod=12, slowperiod=26, signalperiod=9).iloc[:]
         macd_values.dropna(how='all', inplace=True)
 
         if macd_values[signal[0]].shape[0]:

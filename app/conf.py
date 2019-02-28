@@ -10,15 +10,15 @@ class Configuration():
     """Parses the environment configuration to create the config objects.
     """
 
-    def __init__(self):
+    def __init__(self, config_ff):
         """Initializes the Configuration class
         """
 
-        with open('defaults.yml', 'r') as config_file:
+        with open('../configs/defaults.yml', 'r') as config_file:
             default_config = yaml.load(config_file)
 
-        if os.path.isfile('config.yml'):
-            with open('config.yml', 'r') as config_file:
+        if os.path.isfile('../configs/' + config_ff + '.yml'):
+            with open('../configs/' + config_ff + '.yml', 'r') as config_file:
                 user_config = yaml.load(config_file)
         else:
             user_config = dict()

@@ -15,24 +15,26 @@ from notifiers.telegram_client import TelegramNotifier
 from notifiers.webhook_client import WebhookNotifier
 from notifiers.stdout_client import StdoutNotifier
 
+
 class Notifier():
     """Handles sending notifications via the configured notifiers
     """
 
-    def __init__(self, notifier_config):
+    def __init__(self, notifier_config, config):
         """Initializes Notifier class
 
         Args:
             notifier_config (dict): A dictionary containing configuration for the notifications.
         """
 
+        self.config = config
         self.logger = structlog.get_logger()
         self.notifier_config = notifier_config
         self.last_analysis = dict()
 
         self.hotImoji = emojize(":hotsprings: ", use_aliases=True)
-        self.coldImoji = emojize(":snowman: " , use_aliases=True)
-        self.primaryImoji = emojize(":ok_hand: " , use_aliases=True)
+        self.coldImoji = emojize(":snowman: ", use_aliases=True)
+        self.primaryImoji = emojize(":ok_hand: ", use_aliases=True)
 
         enabled_notifiers = list()
         self.logger = structlog.get_logger()
@@ -96,7 +98,6 @@ class Notifier():
 
         self.logger.info('enabled notifers: %s', enabled_notifiers)
 
-
     def notify_all(self, new_analysis):
         """Trigger a notification for all notification options.
 
@@ -117,6 +118,7 @@ class Notifier():
 
         Args:
             new_analysis (dict): The new_analysis to send.
+            :param config:
         """
 
         self._indicator_message_templater(
@@ -124,7 +126,6 @@ class Notifier():
             self.notifier_config['slack']['optional']['template']
         )
         print()
-
 
     def notify_discord(self, new_analysis):
         """Send a notification via the discord notifier
@@ -141,7 +142,6 @@ class Notifier():
             if message.strip():
                 self.discord_client.notify(message)
 
-
     def notify_slack(self, new_analysis):
         """Send a notification via the slack notifier
 
@@ -156,7 +156,6 @@ class Notifier():
             )
             if message.strip():
                 self.slack_client.notify(message)
-
 
     def notify_twilio(self, new_analysis):
         """Send a notification via the twilio notifier
@@ -173,7 +172,6 @@ class Notifier():
             if message.strip():
                 self.twilio_client.notify(message)
 
-
     def notify_gmail(self, new_analysis):
         """Send a notification via the gmail notifier
 
@@ -189,7 +187,6 @@ class Notifier():
             if message.strip():
                 self.gmail_client.notify(message)
 
-
     def notify_telegram(self, new_analysis):
         """Send a notification via the telegram notifier
 
@@ -204,7 +201,6 @@ class Notifier():
             )
             if message.strip():
                 self.telegram_client.notify(message)
-
 
     def notify_webhook(self, new_analysis):
         """Send a notification via the webhook notifier
@@ -259,7 +255,6 @@ class Notifier():
                 notifier_configured = False
         return notifier_configured
 
-
     def _indicator_message_templater(self, new_analysis, template):
         """Creates a message from a user defined template
 
@@ -281,26 +276,24 @@ class Notifier():
         for exchange in new_analysis:
             for market in new_analysis[exchange]:
 
-
                 base_currency, quote_currency = market.split('/')
 
                 sendNotification = False
                 allIndicatorData = {}
                 primaryIndicators = []
                 crossedData = {}
+                informatntData = {}
                 couldCount = 0
                 hotCount = 0
 
                 allIndicatorData["name"] = base_currency + quote_currency
                 allIndicatorData["exchange"] = exchange
-                allIndicatorData["crosed"] = {}
+                allIndicatorData["crossed"] = {}
+                allIndicatorData["informants"] = {}
 
                 for indicator_type in new_analysis[exchange][market]:
 
                     print(indicator_type)
-                    
-
-                    
 
                     for indicator in new_analysis[exchange][market][indicator_type]:
 
@@ -310,7 +303,6 @@ class Notifier():
 
                             values = dict()
                             jsonIndicator = {}
-                            crosedIndicator = False
 
                             if indicator_type == 'informants':
                                 for signal in analysis['config']['signal']:
@@ -319,9 +311,10 @@ class Notifier():
                                     values[signal] = analysis['result'].iloc[-1][signal]
                                     if isinstance(values[signal], float):
                                         values[signal] = format(values[signal], '.8f')
-                                
-                                print(values)
-                                #exit()
+
+                                informent_result = {"result": values, "config": analysis['config']}
+                                informatntData[indicator] = informent_result
+                                continue
 
                             elif indicator_type == 'indicators':
                                 for signal in analysis['config']['signal']:
@@ -348,59 +341,55 @@ class Notifier():
 
                                 values[key_signal] = analysis['result'].iloc[-1][key_signal]
                                 if isinstance(values[key_signal], float):
-                                        values[key_signal] = format(values[key_signal], '.8f')
+                                    values[key_signal] = format(values[key_signal], '.8f')
 
                                 values[crossed_signal] = analysis['result'].iloc[-1][crossed_signal]
                                 if isinstance(values[crossed_signal], float):
-                                        values[crossed_signal] = format(values[crossed_signal], '.8f')
+                                    values[crossed_signal] = format(values[crossed_signal], '.8f')
 
-                                print(key_signal)
-                                print(crossed_signal)
-                                print("Crosed Values result : " + str(latest_result['is_hot']) + " : key ===> " + values[key_signal] + " crossed ====> " + values[crossed_signal])
-                                
-                                dataCros = {}
-                                dataCros["name"] = key_signal[0:-2]
-                                dataCros["key_value"] = values[key_signal]
-                                dataCros["crossed_value"] = values[crossed_signal]
-                                dataCros["is_hot"] = True if latest_result['is_hot'] else False
-                                dataCros["is_cold"] = True if latest_result['is_cold'] else False
-                                dataCros["key_config"] = new_analysis[exchange][market]['informants'][dataCros["name"]][0]["config"]
-                                dataCros["crossed_config"] = new_analysis[exchange][market]['informants'][dataCros["name"]][1]["config"]
+                                dataCros = {"name": key_signal[0:-2], "key_value": values[key_signal],
+                                            "crossed_value": values[crossed_signal],
+                                            "is_hot": True if latest_result['is_hot'] else False,
+                                            "is_cold": True if latest_result['is_cold'] else False}
+                                dataCros["key_config"] = \
+                                    new_analysis[exchange][market]['informants'][dataCros["name"]][0]["config"]
+                                dataCros["crossed_config"] = \
+                                    new_analysis[exchange][market]['informants'][dataCros["name"]][1]["config"]
 
-
-                                crossedData[dataCros["name"]] =  dataCros
+                                crossedData[dataCros["name"]] = dataCros
                                 continue
-
 
                             status = 'neutral'
                             if latest_result['is_hot']:
                                 status = 'hot'
-                                if indicator != "ichimoku":
-                                    hotCount+=1
+                                if indicator != "ichimoku" and indicator_type != "informants" and indicator_type != "crossovers":
+                                    hotCount += 1
                             elif latest_result['is_cold']:
                                 status = 'cold'
-                                if indicator != "ichimoku":
-                                    hotCount+=1
+                                if indicator != "ichimoku" and indicator_type != "informants" and indicator_type != "crossovers":
+                                    couldCount += 1
 
                             # Save status of indicator's new analysis
                             new_analysis[exchange][market][indicator_type][indicator][index]['status'] = status
 
-                        
                             if latest_result['is_hot'] or latest_result['is_cold'] or customCode:
                                 try:
-                                    last_status = self.last_analysis[exchange][market][indicator_type][indicator][index]['status']
+                                    last_status = \
+                                        self.last_analysis[exchange][market][indicator_type][indicator][index]['status']
                                 except:
                                     last_status = str()
 
                                 should_alert = True
-                                if analysis['config']['alert_frequency'] == 'once':
-                                    if last_status == status :
+                                try:
+                                    if analysis['config']['alert_frequency'] == 'once':
+                                        if last_status == status:
+                                            should_alert = False
+
+                                    if not analysis['config']['alert_enabled']:
                                         should_alert = False
+                                except Exception as ex:
+                                    print(ex)
 
-                                if not analysis['config']['alert_enabled']:
-                                    should_alert = False
-
-                                
                                 jsonIndicator["values"] = values
                                 jsonIndicator["exchange"] = exchange
                                 jsonIndicator["market"] = market
@@ -414,13 +403,11 @@ class Notifier():
                                 jsonIndicator["status"] = status
                                 jsonIndicator["last_status"] = last_status
 
-                                
-
                                 if (latest_result['is_hot'] or latest_result['is_cold']) and should_alert:
                                     sendNotification = True
 
                                     primaryIndicators.append(indicator)
-                                    
+
                                     new_message += message_template.render(
                                         values=values,
                                         exchange=exchange,
@@ -432,36 +419,77 @@ class Notifier():
                                         analysis=analysis,
                                         status=status,
                                         last_status=last_status
-                                    )  
+                                    )
 
                                     if len(primaryIndicators) == 0:
                                         jsonIndicator["primary"] = True
-                                    else :
+                                    else:
                                         jsonIndicator["primary"] = False
 
-                                else :
+                                else:
                                     jsonIndicator["primary"] = False
 
                                 allIndicatorData[indicator] = jsonIndicator
-
-                if sendNotification==True and len(primaryIndicators) >= 2 and (hotCount >= 2 or couldCount >= 2):
+                myset = self.config.settings
+                if sendNotification == True and len(primaryIndicators) >= 2 and \
+                        (hotCount >= myset["max_hot_notification"] or couldCount >= myset["max_cold_notification"]):
                     allIndicatorData["crossed"] = crossedData
+                    allIndicatorData["informants"] = informatntData
                     print("Hot : " + str(hotCount) + "  cold : " + str(couldCount))
                     self.notify_custom_telegram(allIndicatorData)
-                    exit()
+                    # exit()
 
         # Merge changes from new analysis into last analysis
         self.last_analysis = {**self.last_analysis, **new_analysis}
         return new_message
 
+    def bollinger_bands_state_calculation(self, upperband, middleband, lowerband, v_close):
+
+        isInTop = v_close > middleband
+        isDown = v_close < middleband
+
+        isCold = isHot = False
+
+        if isInTop:
+            diff_close = upperband - v_close
+            diff_med = v_close - middleband
+
+            isCold = diff_close < diff_med
+
+        elif isDown:
+            diff_close = v_close - lowerband
+            diff_med = middleband - v_close
+
+            isHot = diff_close < diff_med
+
+        if isCold:
+            return "cold"
+        elif isHot:
+            return "hot"
+        else:
+            return "neutral"
+
+    def moving_avg_status(self, key_value, crossed_value, is_hot, key_config, crossed_config):
+
+        if is_hot:
+            message = str(key_config["period_count"]) + " up " + str(crossed_config["period_count"])
+        else:
+            message = str(key_config["period_count"]) + " down " + str(crossed_config["period_count"])
+
+        message += self.status_generator(False, "hot" if is_hot else "cold")
+        # message += "\n \t" + key_config["candle_period"] + "/" + str(key_config["period_count"]) + " ====> " + str(key_value)
+        # message += "\n \t" + crossed_config["candle_period"] + "/" + str(crossed_config["period_count"]) + " ====> " + str(crossed_value)
+
+        return message
+
     def status_generator(self, primary, state):
         message = str()
 
-        if primary == True :
+        if primary and (state == "cold" or state == "hot"):
             message += self.primaryImoji
-        elif state == "cold" :
+        elif state == "cold":
             message += self.coldImoji
-        elif state == "hot" :
+        elif state == "hot":
             message += self.hotImoji
 
         message += "\n"
@@ -474,37 +502,73 @@ class Notifier():
             objectsData (dict): The new_analysis to send.
         """
 
-        print(json.dumps(objectsData))
+        # print(json.dumps(objectsData))
 
-        #try:
-        message = str()
+        try:
+            message = str()
 
-        #Crypto Name
-        message = emojize(":gem:", use_aliases=True) + " #" + objectsData["name"] + "\n"
+            # Crypto Name
+            message = emojize(":gem:", use_aliases=True) + " #" + objectsData["name"] + "\n"
 
-        #Market Name
-        message += "4H / " + objectsData["exchange"] + "\n"
+            # Market Name
+            message += self.config.settings["period_data"] + " / " + objectsData["exchange"] + "\n"
 
-        #MFI
-        message += "MFI - is " + objectsData["mfi"]["status"] + " (" + objectsData["mfi"]["values"]["mfi"] + ") "
-        message += self.status_generator(objectsData["mfi"]["primary"], objectsData["mfi"]["status"])
+            # MFI
+            mfi = objectsData["mfi"]
+            message += "MFI - is " + mfi["status"] + " (" + mfi["values"]["mfi"] + ") "
+            message += self.status_generator(mfi["primary"], mfi["status"])
 
-        #RSI
-        message += "RSI - is " + objectsData["rsi"]["status"] + " (" + objectsData["rsi"]["values"]["rsi"] + ")"
-        message += self.status_generator(objectsData["rsi"]["primary"], objectsData["rsi"]["status"])
+            # RSI
+            rsi = objectsData["rsi"]
+            message += "RSI - is " + rsi["status"] + " (" + rsi["values"]["rsi"] + ")"
+            message += self.status_generator(rsi["primary"], rsi["status"])
 
-        #STOCH_RSI
-        message += "STOCH_RSI - is " + objectsData["stoch_rsi"]["status"] + " (" + objectsData["stoch_rsi"]["values"]["stoch_rsi"] + ")"
-        message += self.status_generator(objectsData["stoch_rsi"]["primary"], objectsData["stoch_rsi"]["status"])
+            # STOCH_RSI
+            stock_rsi = objectsData["stoch_rsi"]
+            message += "STOCH_RSI - is " + stock_rsi["status"] + " (" + stock_rsi["values"]["stoch_rsi"] + ")"
+            message += self.status_generator(stock_rsi["primary"], stock_rsi["status"])
 
-        #MACD
-        message += "MACD - is " + objectsData["macd"]["status"] + " (" + objectsData["macd"]["values"]["macd"] + ")"
-        message += self.status_generator(objectsData["macd"]["primary"], objectsData["macd"]["status"])
+            # MACD
+            macd = objectsData["macd"]
+            message += "MACD - is " + macd["status"] + " (" + macd["values"]["macd"] + ")"
+            message += self.status_generator(macd["primary"], macd["status"])
 
-        print(message)
+            # Bollinder bands
+            bb_result = objectsData["informants"]["bollinger_bands"]["result"]
+            bollinger_bands_state = self.bollinger_bands_state_calculation(
+                float(bb_result["upperband"]),
+                float(bb_result["middleband"]),
+                float(bb_result["lowerband"]),
+                float(objectsData["informants"]["ohlcv"]["result"]["close"])
+            )
+            message += "Bollinder bands - is " + bollinger_bands_state
+            message += self.status_generator(False, bollinger_bands_state)
+            # message += " \t(upperband ===> " + bb_result["upperband"] + ") \n"
+            # message += " \t(middleband ===> " + bb_result["middleband"] + ") \n"
+            # message += " \t(lowerband ===> " + bb_result["lowerband"] + ")"
 
-        #if self.telegram_configured:
-        #    self.telegram_client.notify(message)
+            # EMA Crossed
+            ema = objectsData["crossed"]["ema"]
+            ema_key_config = ema["key_config"]
+            ema_crossed_config = ema["crossed_config"]
+            mva_stat = self.moving_avg_status(
+                ema["key_value"],
+                ema["crossed_value"],
+                bool(ema["is_hot"]),
+                ema_key_config,
+                ema_crossed_config
+            )
+            message += "Moving avrege (ema) " + mva_stat
 
-        #except Exception as ex:
-            #print(ex)
+            # ICHIMOKU
+            ichimoku = objectsData["ichimoku"]
+            message += "ICHIMOKU - is " + ichimoku["status"]
+            message += self.status_generator(ichimoku["primary"], ichimoku["status"])
+
+            print(message)
+
+            if self.telegram_configured:
+                self.telegram_client.notify(message)
+
+        except Exception as ex:
+            print("Error : %s", str(ex))

@@ -14,6 +14,7 @@ from tenacity import RetryError
 from analysis import StrategyAnalyzer
 from outputs import Output
 
+
 class Behaviour():
     """Default analyzer which gives users basic trading information.
     """
@@ -40,7 +41,6 @@ class Behaviour():
         output_interface = Output()
         self.output = output_interface.dispatcher
 
-
     def run(self, market_pairs, output_mode):
         """The analyzer entrypoint
 
@@ -51,10 +51,10 @@ class Behaviour():
 
         self.logger.info("Starting default analyzer...")
 
-        if market_pairs:
-            self.logger.info("Found configured markets: %s", market_pairs)
-        else:
-            self.logger.info("No configured markets, using all available on exchange.")
+        # if market_pairs:
+        #     self.logger.info("Found configured markets: %s", market_pairs)
+        # else:
+        #     self.logger.info("No configured markets, using all available on exchange.")
 
         market_data = self.exchange_interface.get_exchange_markets(markets=market_pairs)
 
@@ -62,8 +62,7 @@ class Behaviour():
 
         new_result = self._test_strategies(market_data, output_mode)
 
-        #self.notifier.notify_all(new_result)
-
+        # self.notifier.notify_all(new_result)
 
     def _test_strategies(self, market_data, output_mode):
         """Test the strategies and perform notifications as required
@@ -74,7 +73,7 @@ class Behaviour():
         """
 
         new_result = dict()
-        
+
         for exchange in market_data:
 
             self.logger.info("Beginning analysis of %s", exchange)
@@ -106,10 +105,10 @@ class Behaviour():
 
                 if output_mode in self.output:
                     output_data = deepcopy(new_result[exchange][market_pair])
-                    #print(
+                    # print(
                     #    self.output[output_mode](output_data, market_pair),
                     #    end=''
-                    #)
+                    # )
                 else:
                     self.logger.warn()
 
@@ -119,7 +118,6 @@ class Behaviour():
         # Print an empty line when complete
         print()
         return new_result
-
 
     def _get_indicator_results(self, exchange, market_pair):
         """Execute the indicator analysis on a particular exchange and pair.
@@ -133,7 +131,7 @@ class Behaviour():
         """
 
         indicator_dispatcher = self.strategy_analyzer.indicator_dispatcher()
-        results = { indicator: list() for indicator in self.indicator_conf.keys() }
+        results = {indicator: list() for indicator in self.indicator_conf.keys()}
         historical_data_cache = dict()
 
         for indicator in self.indicator_conf:
@@ -177,7 +175,6 @@ class Behaviour():
                     })
         return results
 
-
     def _get_informant_results(self, exchange, market_pair):
         """Execute the informant analysis on a particular exchange and pair.
 
@@ -190,7 +187,7 @@ class Behaviour():
         """
 
         informant_dispatcher = self.strategy_analyzer.informant_dispatcher()
-        results = { informant: list() for informant in self.informant_conf.keys() }
+        results = {informant: list() for informant in self.informant_conf.keys()}
         historical_data_cache = dict()
 
         for informant in self.informant_conf:
@@ -231,7 +228,6 @@ class Behaviour():
                     })
         return results
 
-
     def _get_crossover_results(self, new_result):
         """Execute crossover analysis on the results so far.
 
@@ -244,7 +240,7 @@ class Behaviour():
         """
 
         crossover_dispatcher = self.strategy_analyzer.crossover_dispatcher()
-        results = { crossover: list() for crossover in self.crossover_conf.keys() }
+        results = {crossover: list() for crossover in self.crossover_conf.keys()}
 
         for crossover in self.crossover_conf:
             if crossover not in crossover_dispatcher:
@@ -256,8 +252,15 @@ class Behaviour():
                     self.logger.debug("%s is disabled, skipping.", crossover)
                     continue
 
-                key_indicator = new_result[crossover_conf['key_indicator_type']][crossover_conf['key_indicator']][crossover_conf['key_indicator_index']]
-                crossed_indicator = new_result[crossover_conf['crossed_indicator_type']][crossover_conf['crossed_indicator']][crossover_conf['crossed_indicator_index']]
+                try:
+                    key_indicator = new_result[crossover_conf['key_indicator_type']][crossover_conf['key_indicator']][
+                        crossover_conf['key_indicator_index']]
+                    crossed_indicator = \
+                    new_result[crossover_conf['crossed_indicator_type']][crossover_conf['crossed_indicator']][
+                        crossover_conf['crossed_indicator_index']]
+                except:
+                    self.logger.error("IndexError: list index out of range, %s", crossover)
+                    continue
 
                 dispatcher_args = {
                     'key_indicator': key_indicator['result'],
@@ -273,7 +276,6 @@ class Behaviour():
                     'config': crossover_conf
                 })
         return results
-
 
     def _get_historical_data(self, market_pair, exchange, candle_period):
         """Gets a list of OHLCV data for the given pair and exchange.
@@ -318,7 +320,6 @@ class Behaviour():
             )
             self.logger.debug(traceback.format_exc())
         return historical_data
-
 
     def _get_analysis_result(self, dispatcher, indicator, dispatcher_args, market_pair):
         """Get the results of performing technical analysis
