@@ -8,6 +8,11 @@ settings:
   output_mode: cli
   update_interval: 300
   market_pairs: null
+  max_cold_notification: 2
+  max_hot_notification: 2
+  period_data: 4h
+  run_on_start: False
+  wait_and_run: 3600
 
 exchanges: null
 

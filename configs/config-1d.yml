@@ -1,6 +1,11 @@
 settings:
-  update_interval: 60
+  update_interval: 43200
   log_level: INFO
+  period_data: 1d
+  run_on_start: False
+  max_cold_notification: 2
+  max_hot_notification: 2
+  wait_and_run: 3600
   market_pairs:
     - ADA/BTC
     - ADX/BTC
@@ -153,7 +158,7 @@ indicators:
         - mfi
       hot: 20
       cold: 80
-      candle_period: 4h
+      candle_period: 1d
       period_count: 14
   obv:
     - enabled: false
@@ -172,7 +177,7 @@ indicators:
         - rsi
       hot: 30
       cold: 70
-      candle_period: 4h
+      candle_period: 1d
       period_count: 15
   stoch_rsi:
     - enabled: true
@@ -182,7 +187,7 @@ indicators:
         - stoch_rsi
       hot: 20
       cold: 80
-      candle_period: 4h
+      candle_period: 1d
       period_count: 14
   macd:
     - enabled: true
@@ -192,7 +197,7 @@ indicators:
         - macd
       hot: 0
       cold: 0
-      candle_period: 4h
+      candle_period: 1d
   ichimoku:
     - enabled: true
       alert_enabled: true
@@ -202,35 +207,35 @@ indicators:
         - leading_span_b
       hot: true
       cold: true
-      candle_period: 4h
+      candle_period: 1d
 informants:
   vwap:
     - enabled: true
       signal:
         - vwap
-      candle_period: 4h
+      candle_period: 1d
       period_count: 15
   sma:
     - enabled: true
       signal:
         - sma
-      candle_period: 4h
+      candle_period: 1d
       period_count: 20
     - enabled: true
       signal:
         - sma
-      candle_period: 4h
+      candle_period: 1d
       period_count: 50
   ema:
     - enabled: true
       signal:
         - ema
-      candle_period: 4h
+      candle_period: 1d
       period_count: 20
     - enabled: true
       signal:
         - ema
-      candle_period: 4h
+      candle_period: 1d
       period_count: 50
   bollinger_bands:
     - enabled: true
@@ -239,7 +244,7 @@ informants:
         - upperband
         - middleband
         - lowerband
-      candle_period: 4h
+      candle_period: 1d
   ohlcv:
     - enabled: true
       signal:
@@ -247,7 +252,7 @@ informants:
         - open
         - low
         - high
-      candle_period: 4h
+      candle_period: 1d
       period_count: 15
 
 crossovers:
