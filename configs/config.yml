@@ -1,0 +1,289 @@
+settings:
+  update_interval: 1800
+  log_level: INFO
+  period_data: 4h
+  max_cold_notification: 2
+  max_hot_notification: 2
+  run_on_start: True
+  market_pairs:
+    - ADA/BTC
+    - ADX/BTC
+    - AE/BTC
+    - AION/BTC
+    - AMB/BTC
+    - APPC/BTC
+    - ARK/BTC
+    - ARN/BTC
+    - AST/BTC
+    - BAT/BTC
+    - BCH/BTC
+    - BCD/BTC
+    - BCN/BTC
+    - BCPT/BTC
+    - BLZ/BTC
+    - BNB/BTC
+    - BNT/BTC
+    - BQX/BTC
+    - BRD/BTC
+    - BTG/BTC
+    - BTS/BTC
+    - CDT/BTC
+    - CHAT/BTC
+    - CLOAK/BTC
+    - CMT/BTC
+    - CND/BTC
+    - DASH/BTC
+    - DGD/BTC
+    - DLT/BTC
+    - DNT/BTC
+    - EDO/BTC
+    - ELF/BTC
+    - ENG/BTC
+    - ENJ/BTC
+    - EOS/BTC
+    - ETC/BTC
+    - ETH/BTC
+    - EVX/BTC
+    - FUEL/BTC
+    - FUN/BTC
+    - GAS/BTC
+    - GNT/BTC
+    - GRS/BTC
+    - GTO/BTC
+    - GVT/BTC
+    - GXS/BTC
+    - HSR/BTC
+    - ICN/BTC
+    - ICX/BTC
+    - INS/BTC
+    - IOST/BTC
+    - IOTA/BTC
+    - KMD/BTC
+    - KNC/BTC
+    - LEND/BTC
+    - LINK/BTC
+    - LOOM/BTC
+    - LRC/BTC
+    - LSK/BTC
+    - LTC/BTC
+    - LUN/BTC
+    - MANA/BTC
+    - MCO/BTC
+    - MDA/BTC
+    - MOD/BTC
+    - MTH/BTC
+    - MTL/BTC
+    - NAV/BTC
+    - NCASH/BTC
+    - NEBL/BTC
+    - NEO/BTC
+    - NULS/BTC
+    - OAX/BTC
+    - OMG/BTC
+    - ONT/BTC
+    - OST/BTC
+    - PIVX/BTC
+    - POA/BTC
+    - POE/BTC
+    - POWR/BTC
+    - PPT/BTC
+    - QLC/BTC
+    - QSP/BTC
+    - QTUM/BTC
+    - RCN/BTC
+    - RDN/BTC
+    - REP/BTC
+    - REQ/BTC
+    - RLC/BTC
+    - RPX/BTC
+    - SALT/BTC
+    - SNGLS/BTC
+    - SNM/BTC
+    - SNT/BTC
+    - STEEM/BTC
+    - STORJ/BTC
+    - STORM/BTC
+    - STRAT/BTC
+    - SUB/BTC
+    - SYS/BTC
+    - TNB/BTC
+    - TNT/BTC
+    - TRIG/BTC
+    - TRX/BTC
+    - VEN/BTC
+    - VIA/BTC
+    - VIB/BTC
+    - VIBE/BTC
+    - WABI/BTC
+    - WAN/BTC
+    - WAVES/BTC
+    - WINGS/BTC
+    - WPR/BTC
+    - WTC/BTC
+    - XEM/BTC
+    - XLM/BTC
+    - XMR/BTC
+    - XRP/BTC
+    - XVG/BTC
+    - XZC/BTC
+    - ZEC/BTC
+    - ZIL/BTC
+    - ZRX/BTC
+
+exchanges:
+  binance:
+    required:
+      enabled: true
+
+  bittrex:
+    required:
+      enabled: false
+indicators:
+  momentum:
+    - enabled: true
+      alert_enabled: true
+      alert_frequency: once
+      signal:
+        - momentum
+      hot: 0
+      cold: 0
+      candle_period: 4h
+      period_count: 10
+  mfi:
+    - enabled: true
+      alert_enabled: true
+      alert_frequency: once
+      signal:
+        - mfi
+      hot: 20
+      cold: 80
+      candle_period: 4h
+      period_count: 14
+  obv:
+    - enabled: false
+      alert_enabled: true
+      alert_frequency: once
+      signal:
+        - obv
+      hot: 0
+      cold: 0
+      candle_period: 4h
+  rsi:
+    - enabled: true
+      alert_enabled: true
+      alert_frequency: once
+      signal:
+        - rsi
+      hot: 30
+      cold: 70
+      candle_period: 4h
+      period_count: 15
+  stoch_rsi:
+    - enabled: true
+      alert_enabled: true
+      alert_frequency: once
+      signal:
+        - stoch_rsi
+      hot: 20
+      cold: 80
+      candle_period: 4h
+      period_count: 14
+  macd:
+    - enabled: true
+      alert_enabled: true
+      alert_frequency: once
+      signal:
+        - macd
+      hot: 0
+      cold: 0
+      candle_period: 4h
+  ichimoku:
+    - enabled: true
+      alert_enabled: true
+      alert_frequency: once
+      signal:
+        - leading_span_a
+        - leading_span_b
+      hot: true
+      cold: true
+      candle_period: 4h
+informants:
+  vwap:
+    - enabled: true
+      signal:
+        - vwap
+      candle_period: 4h
+      period_count: 15
+  sma:
+    - enabled: true
+      signal:
+        - sma
+      candle_period: 4h
+      period_count: 20
+    - enabled: true
+      signal:
+        - sma
+      candle_period: 4h
+      period_count: 50
+  ema:
+    - enabled: true
+      signal:
+        - ema
+      candle_period: 4h
+      period_count: 20
+    - enabled: true
+      signal:
+        - ema
+      candle_period: 4h
+      period_count: 50
+  bollinger_bands:
+    - enabled: true
+      period_count: 20
+      signal:
+        - upperband
+        - middleband
+        - lowerband
+      candle_period: 4h
+  ohlcv:
+    - enabled: true
+      signal:
+        - close
+        - open
+        - low
+        - high
+      candle_period: 4h
+      period_count: 15
+
+crossovers:
+  std_crossover:
+    - enabled: true
+      alert_enabled: true
+      alert_frequency: once
+      key_indicator: ema
+      key_indicator_index: 0
+      key_indicator_type: informants
+      key_signal: ema
+      crossed_indicator: ema
+      crossed_indicator_index: 1
+      crossed_indicator_type: informants
+      crossed_signal: ema
+    - enabled: true
+      alert_enabled: true
+      alert_frequency: once
+      key_indicator: sma
+      key_indicator_index: 0
+      key_indicator_type: informants
+      key_signal: sma
+      crossed_indicator: sma
+      crossed_indicator_index: 1
+      crossed_indicator_type: informants
+      crossed_signal: sma
+
+notifiers:
+  telegram:
+    required:
+      token: 776834904:AAE3qItiKF_G85s3E5lQ25SEfffy7UUikG0
+      chat_id: -341377520
+    optional:
+      parse_mode: html
+      template: "{{exchange}} - {{market}} - {{indicator}} - {{indicator_number}} is {{status}}! ({{values}}){{ '\n' -}}"
