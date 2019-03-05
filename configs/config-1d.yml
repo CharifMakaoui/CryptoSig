@@ -283,8 +283,8 @@ crossovers:
 notifiers:
   telegram:
     required:
-      token: 776834904:AAE3qItiKF_G85s3E5lQ25SEfffy7UUikG0
-      chat_id: -341377520
+      token: 551764930:AAFikYCCzPYU81Oh0HsExevOI1-zm9ME6Sw
+      chat_id: -1001476741609
     optional:
       parse_mode: html
       template: "{{exchange}} - {{market}} - {{indicator}} - {{indicator_number}} is {{status}}! ({{values}}){{ '\n' -}}"
