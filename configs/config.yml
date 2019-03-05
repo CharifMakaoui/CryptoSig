@@ -1,5 +1,5 @@
 settings:
-  update_interval: 1800
+  update_interval: 900
   log_level: INFO
   period_data: 4h
   max_cold_notification: 2
