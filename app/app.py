@@ -74,9 +74,15 @@ def run_from_config(config_ff, threadID):
 
     while True:
         if settings['run_on_start']:
+            start = time.time()
             behaviour.run(settings['market_pairs'], settings['output_mode'])
-            logger.info("Sleeping for %s seconds", settings['update_interval'])
-            time.sleep(settings['update_interval'])
+            end = time.time()
+
+            dif = end - start
+
+            wait_for = settings['update_interval'] - int(dif)
+            logger.info("Sleeping for %s seconds", wait_for)
+            time.sleep(wait_for)
         else:
             logger.info("Run on start not enabled waiting for %s seconds", settings['wait_and_run'])
             time.sleep(settings['wait_and_run'])

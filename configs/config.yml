@@ -1,9 +1,9 @@
 settings:
-  update_interval: 900
+  update_interval: 14400
   log_level: INFO
   period_data: 4h
-  max_cold_notification: 2
-  max_hot_notification: 2
+  max_cold_notification: 3
+  max_hot_notification: 3
   run_on_start: True
   market_pairs:
     - ADA/BTC
@@ -282,8 +282,8 @@ crossovers:
 notifiers:
   telegram:
     required:
-      token: 551764930:AAFikYCCzPYU81Oh0HsExevOI1-zm9ME6Sw
-      chat_id: -1001476741609
+      token: 776834904:AAE3qItiKF_G85s3E5lQ25SEfffy7UUikG0
+      chat_id: -341377520
     optional:
       parse_mode: html
       template: "{{exchange}} - {{market}} - {{indicator}} - {{indicator_number}} is {{status}}! ({{values}}){{ '\n' -}}"

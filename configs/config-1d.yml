@@ -3,8 +3,8 @@ settings:
   log_level: INFO
   period_data: 1d
   run_on_start: False
-  max_cold_notification: 2
-  max_hot_notification: 2
+  max_cold_notification: 3
+  max_hot_notification: 3
   wait_and_run: 3600
   market_pairs:
     - ADA/BTC

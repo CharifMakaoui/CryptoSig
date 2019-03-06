@@ -477,8 +477,9 @@ class Notifier():
             message = str(key_config["period_count"]) + " down " + str(crossed_config["period_count"])
 
         message += self.status_generator(False, "hot" if is_hot else "cold")
-        # message += "\n \t" + key_config["candle_period"] + "/" + str(key_config["period_count"]) + " ====> " + str(key_value)
-        # message += "\n \t" + crossed_config["candle_period"] + "/" + str(crossed_config["period_count"]) + " ====> " + str(crossed_value)
+        # message += "\n \t" + key_config["candle_period"] + "/" + str(key_config["period_count"]) + " ====> " + str(
+        # key_value) message += "\n \t" + crossed_config["candle_period"] + "/" + str(crossed_config["period_count"])
+        #  + " ====> " + str(crossed_value)
 
         return message
 
@@ -512,6 +513,7 @@ class Notifier():
 
             # Market Name
             message += self.config.settings["period_data"] + " / " + objectsData["exchange"] + "\n"
+            message += "#Price -- " + objectsData["informants"]["ohlcv"]["result"]["close"] + " BTC \n\n"
 
             # MFI
             mfi = objectsData["mfi"]
@@ -541,7 +543,7 @@ class Notifier():
                 float(bb_result["lowerband"]),
                 float(objectsData["informants"]["ohlcv"]["result"]["close"])
             )
-            message += "Bollinder bands - is " + bollinger_bands_state
+            message += "Bollinger Bands - is " + bollinger_bands_state
             message += self.status_generator(False, bollinger_bands_state)
             # message += " \t(upperband ===> " + bb_result["upperband"] + ") \n"
             # message += " \t(middleband ===> " + bb_result["middleband"] + ") \n"
@@ -558,17 +560,17 @@ class Notifier():
                 ema_key_config,
                 ema_crossed_config
             )
-            message += "Moving avrege (ema) " + mva_stat
+            message += "Moving Average (ema) " + mva_stat
 
             # ICHIMOKU
             ichimoku = objectsData["ichimoku"]
-            message += "ICHIMOKU - is " + ichimoku["status"]
+            message += "Ichimoku Cloud - is " + ichimoku["status"]
             message += self.status_generator(ichimoku["primary"], ichimoku["status"])
-
-            print(message)
 
             if self.telegram_configured:
                 self.telegram_client.notify(message)
 
+            print(message)
+
         except Exception as ex:
-            print("Error : %s", str(ex))
+            print(ex)
